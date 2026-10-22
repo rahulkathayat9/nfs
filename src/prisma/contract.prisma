@@ -1,0 +1,97 @@
+// use prisma-8
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt temporal.updatedAt()
+  bookings  Booking[]
+}
+
+model Hotel {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String
+  city        String
+  address     String
+  country     String
+
+  createdAt   DateTime   @default(now())
+  updatedAt   temporal.updatedAt()
+
+  rooms       Room[]
+  roomType    RoomType[]
+}
+
+model RoomType {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String
+  capacity    Int
+  price       Decimal
+  hotelId     Int
+
+  hotel       Hotel   @relation(fields:[hotelId], references:[id])
+  rooms       Room[]
+
+  @@index([hotelId])
+}
+
+model Room {
+  id         Int       @id @default(autoincrement())
+  roomNumber String
+  hotelId    Int
+  roomTypeId Int
+  bookings   Booking[]
+
+  hotel      Hotel     @relation(fields:[hotelId], references:[id])
+  roomType   RoomType  @relation(fields:[roomTypeId], references:[id])
+
+  @@unique([hotelId, roomNumber])
+  @@index([roomTypeId])
+}
+
+model Booking {
+  id        Int           @id @default(autoincrement())
+  roomId    Int
+
+  userId    Int
+  payment   Payment?
+
+  status    BookingStatus @default(PENDING)
+
+  checkIn   DateTime
+  checkOut  DateTime
+
+  createdAt DateTime      @default(now())
+
+  user      User          @relation(fields:[userId], references:[id])
+  room      Room          @relation(fields:[roomId], references:[id])
+
+  @@index([roomId, checkIn, checkOut])
+  @@index([userId])
+}
+
+model Payment {
+  id        Int           @id @default(autoincrement())
+  bookingId Int           @unique
+  amount    Decimal
+
+  status    PaymentStatus @default(PENDING)
+
+  booking   Booking       @relation(fields:[bookingId], references:[id])
+  createdAt DateTime      @default(now())
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
