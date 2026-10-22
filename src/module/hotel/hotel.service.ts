@@ -13,6 +13,42 @@ export class HotelService {
 
     static async getAllHotels(city?: string) {
         if (city) {
+            return db.orm.public.Hotel.where({ city }).all();
         }
+        return db.orm.public.Hotel.all();
+    }
+
+    static async getHotelById(id: number) {
+        const hotel = await db.orm.public.Hotel.where({ id }).first();
+        if (!hotel) {
+            throw new Error("Hotel not found, try to search for another one")
+        }
+        return hotel;
+    }
+
+    static async createRoomType(name: string, description: string, capacity: number, price: string, hotelId: number) {
+        const hotel = await db.orm.public.Hotel.where({ id: hotelId }).first();
+        if (!hotel) {
+            throw new Error("Hotel not found, in create RoomType")
+        }
+        return await db.orm.public.RoomType.create({
+            name,
+            description,
+            capacity,
+            price,
+            hotelId,
+        })
+
+    }
+    static async createRoom(roomNumber: string, hotelId: number, roomTypeId: number) {
+        const room = await db.orm.public.Room.where({ roomNumber: roomNumber, hotelId: hotelId }).first();
+        if (room) {
+            throw new Error("This room number already exist")
+        }
+        return db.orm.public.Room.create({
+            roomNumber,
+            roomTypeId,
+            hotelId
+        })
     }
 }
