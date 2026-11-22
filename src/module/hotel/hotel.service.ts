@@ -1,7 +1,7 @@
 import { db } from '../../prisma/db';
 
 export class HotelService {
-    static async createHotel(data: { name: string, description: string, address: string, city: string, price: string, country: string }) {
+    static async createHotel(data: { name: string, description: string, address: string, city: string, country: string }) {
         return await db.orm.public.Hotel.create({
             name: data.name,
             description: data.description,

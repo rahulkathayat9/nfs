@@ -14,7 +14,6 @@ export class HotelController {
                     address,
                     city,
                     country,
-                    price
                 })
                 res.status(201).json({ success: true, messgae: "Hotel created successfully!" })
             }
@@ -23,7 +22,7 @@ export class HotelController {
         }
     }
 
-    static async getAllHotels(res: Response, req: Request) {
+    static async getAllHotels(req: Request, res: Response) {
         try {
             const city = req.query.city as string | undefined
             const hotels = await HotelService.getAllHotels(city);
@@ -33,7 +32,7 @@ export class HotelController {
         }
     }
 
-    static async getHotelById(res: Response, req: Request) {
+    static async getHotelById(req: Request, res: Response) {
         try {
             const id = Number(req.params.id);
             const hotel = await HotelService.getHotelById(id);
@@ -43,7 +42,7 @@ export class HotelController {
         }
     }
 
-    static async createRoomType(res: Response, req: Request) {
+    static async createRoomType(req: Request, res: Response) {
         try {
             const hotelId = Number(req.params.id);
             const { name, description, capacity, price } = req.body;
@@ -65,7 +64,7 @@ export class HotelController {
         }
     }
 
-    static async createRoom(res: Response, req: Request) {
+    static async createRoom(req: Request, res: Response) {
         try {
             const hotelId = Number(req.params.id)
             const { roomNumber, roomTypeId } = req.body
