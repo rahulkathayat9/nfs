@@ -1,7 +1,7 @@
 import { db } from '../../prisma/db';
 
 export class HotelService {
-    static async createHotel(data: { name: string, description: string, address: string, city: string, price: string, country: string }) {
+    static async createHotel(data: { name: string, description: string, address: string, city: string, country: string }) {
         return await db.orm.public.Hotel.create({
             name: data.name,
             description: data.description,
@@ -26,29 +26,29 @@ export class HotelService {
         return hotel;
     }
 
-    static async createRoomType(name: string, description: string, capacity: number, price: string, hotelId: number) {
-        const hotel = await db.orm.public.Hotel.where({ id: hotelId }).first();
+    static async createRoomType(data: { name: string, description: string, capacity: number, price: string, hotelId: number }) {
+        const hotel = await db.orm.public.Hotel.where({ id: data.hotelId }).first();
         if (!hotel) {
             throw new Error("Hotel not found, in create RoomType")
         }
         return await db.orm.public.RoomType.create({
-            name,
-            description,
-            capacity,
-            price,
-            hotelId,
+            name: data.name,
+            description: data.description,
+            capacity: data.capacity,
+            price: data.price,
+            hotelId: data.hotelId,
         })
 
     }
-    static async createRoom(roomNumber: string, hotelId: number, roomTypeId: number) {
-        const room = await db.orm.public.Room.where({ roomNumber: roomNumber, hotelId: hotelId }).first();
+    static async createRoom(data: { roomNumber: string, hotelId: number, roomTypeId: number }) {
+        const room = await db.orm.public.Room.where({ roomNumber: data.roomNumber, hotelId: data.hotelId }).first();
         if (room) {
             throw new Error("This room number already exist")
         }
         return db.orm.public.Room.create({
-            roomNumber,
-            roomTypeId,
-            hotelId
+            roomNumber: data.roomNumber,
+            roomTypeId: data.roomTypeId,
+            hotelId: data.hotelId
         })
     }
 }
